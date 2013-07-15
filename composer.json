@@ -1,6 +1,6 @@
 {
-    "name": "geoip/geoip",
-    "description": "MaxMind GeoIP PHP API",
+    "name": "daigo75/geoip",
+    "description": "Fork of MaxMind GeoIP PHP API with improved error handling",
     "keywords": [ "geoip", "geolocation", "maxmind" ],
     "homepage": "http://dev.maxmind.com/geoip/legacy/downloadable",
     "type": "library",
@@ -10,6 +10,11 @@
             "name": "MaxMind, Inc.",
             "email": "support@maxmind.com",
             "homepage": "http://www.maxmind.com/"
+        },
+        {
+            "name": "Diego Zanella",
+            "email": "diego@pathtoenlightenment.net",
+            "homepage": "http://dev.pathtoenlightenment.net/"
         }
     ],
     "autoload": {
