@@ -236,14 +236,13 @@ class GeoIP {
         "AF","EU","AF","--","--","--","EU","EU","EU","EU",
         "NA","NA","NA", "AF", "--"
 );
-    
+
 }
 function geoip_load_shared_mem ($file) {
 
   $fp = fopen($file, "rb");
   if (!$fp) {
-    print "error opening $file: $php_errormsg\n";
-    exit;
+    throw new Exception("GeoIP, Shared Memory Loading - Error opening file $file. Error: $php_errormsg. Operation aborted.");
   }
   $s_array = fstat($fp);
   $size = $s_array['size'];
@@ -273,7 +272,7 @@ function _setup_segments($gi){
             } else if ($gi->databaseType == GEOIP_REGION_EDITION_REV1){
                 $gi->databaseSegments = GEOIP_STATE_BEGIN_REV1;
 	    } else if (($gi->databaseType == GEOIP_CITY_EDITION_REV0)||
-                     ($gi->databaseType == GEOIP_CITY_EDITION_REV1) 
+                     ($gi->databaseType == GEOIP_CITY_EDITION_REV1)
                     || ($gi->databaseType == GEOIP_ORG_EDITION)
                     || ($gi->databaseType == GEOIP_ORG_EDITION_V6)
                     || ($gi->databaseType == GEOIP_DOMAIN_EDITION)
@@ -286,8 +285,8 @@ function _setup_segments($gi){
 		    || ($gi->databaseType == GEOIP_ACCURACYRADIUS_EDITION)
 		    || ($gi->databaseType == GEOIP_CITY_EDITION_REV0_V6)
 		    || ($gi->databaseType == GEOIP_CITY_EDITION_REV1_V6)
-                    || ($gi->databaseType == GEOIP_NETSPEED_EDITION_REV1)                    
-                    || ($gi->databaseType == GEOIP_NETSPEED_EDITION_REV1_V6)                    
+                    || ($gi->databaseType == GEOIP_NETSPEED_EDITION_REV1)
+                    || ($gi->databaseType == GEOIP_NETSPEED_EDITION_REV1_V6)
 		    || ($gi->databaseType == GEOIP_ASNUM_EDITION)
 		    || ($gi->databaseType == GEOIP_ASNUM_EDITION_V6)){
                 $gi->databaseSegments = 0;
@@ -331,20 +330,20 @@ function _setup_segments($gi){
                     || ($gi->databaseType == GEOIP_CITY_EDITION_REV1)
                     || ($gi->databaseType == GEOIP_CITY_EDITION_REV0_V6)
                     || ($gi->databaseType == GEOIP_CITY_EDITION_REV1_V6)
-                    || ($gi->databaseType == GEOIP_ORG_EDITION) 
+                    || ($gi->databaseType == GEOIP_ORG_EDITION)
                     || ($gi->databaseType == GEOIP_DOMAIN_EDITION)
 		    || ($gi->databaseType == GEOIP_ISP_EDITION)
-                    || ($gi->databaseType == GEOIP_ORG_EDITION_V6) 
+                    || ($gi->databaseType == GEOIP_ORG_EDITION_V6)
                     || ($gi->databaseType == GEOIP_DOMAIN_EDITION_V6)
 		    || ($gi->databaseType == GEOIP_ISP_EDITION_V6)
 		    || ($gi->databaseType == GEOIP_LOCATIONA_EDITION)
 		    || ($gi->databaseType == GEOIP_ACCURACYRADIUS_EDITION)
                     || ($gi->databaseType == GEOIP_CITY_EDITION_REV0_V6)
 		    || ($gi->databaseType == GEOIP_CITY_EDITION_REV1_V6)
-                    || ($gi->databaseType == GEOIP_NETSPEED_EDITION_REV1)                    
-                    || ($gi->databaseType == GEOIP_NETSPEED_EDITION_REV1_V6)                    
+                    || ($gi->databaseType == GEOIP_NETSPEED_EDITION_REV1)
+                    || ($gi->databaseType == GEOIP_NETSPEED_EDITION_REV1_V6)
     		    || ($gi->databaseType == GEOIP_USERTYPE_EDITION)
-		    || ($gi->databaseType == GEOIP_USERTYPE_EDITION_V6)	
+		    || ($gi->databaseType == GEOIP_USERTYPE_EDITION_V6)
                     || ($gi->databaseType == GEOIP_ASNUM_EDITION)
                     || ($gi->databaseType == GEOIP_ASNUM_EDITION_V6)){
             $gi->databaseSegments = 0;
@@ -354,7 +353,7 @@ function _setup_segments($gi){
             }
 	    if (   ( $gi->databaseType == GEOIP_ORG_EDITION )
                 || ( $gi->databaseType == GEOIP_DOMAIN_EDITION )
-                || ( $gi->databaseType == GEOIP_ISP_EDITION ) 
+                || ( $gi->databaseType == GEOIP_ISP_EDITION )
                 || ( $gi->databaseType == GEOIP_ORG_EDITION_V6 )
                 || ( $gi->databaseType == GEOIP_DOMAIN_EDITION_V6 )
                 || ( $gi->databaseType == GEOIP_ISP_EDITION_V6 )) {
@@ -383,7 +382,10 @@ function geoip_open($filename, $flags) {
   if ($gi->flags & GEOIP_SHARED_MEMORY) {
     $gi->shmid = @shmop_open (GEOIP_SHM_KEY, "a", 0, 0);
     } else {
-    $gi->filehandle = fopen($filename,"rb") or die( "Can not open $filename\n" );
+    $gi->filehandle = fopen($filename,"rb");
+		if($gi->filehandle === false) {
+			throw new Exception("GeoIP - Could not open database file $filename." );
+		}
     if ($gi->flags & GEOIP_MEMORY_CACHE) {
         $s_array = fstat($gi->filehandle);
         $gi->memory_buffer = fread($gi->filehandle, $s_array['size']);
@@ -511,7 +513,7 @@ function geoip_country_name_by_addr($gi, $addr) {
 function _geoip_seek_country_v6($gi, $ipnum) {
 
   # arrays from unpack start with offset 1
-  # yet another php mystery. array_merge work around 
+  # yet another php mystery. array_merge work around
   # this broken behaviour
   $v6vec = array_merge(unpack( "C16", $ipnum));
 
@@ -521,7 +523,7 @@ function _geoip_seek_country_v6($gi, $ipnum) {
       // workaround php's broken substr, strpos, etc handling with
       // mbstring.func_overload and mbstring.internal_encoding
       $enc = mb_internal_encoding();
-       mb_internal_encoding('ISO-8859-1'); 
+       mb_internal_encoding('ISO-8859-1');
 
       $buf = substr($gi->memory_buffer,
                             2 * $gi->record_length * $offset,
@@ -529,12 +531,13 @@ function _geoip_seek_country_v6($gi, $ipnum) {
 
       mb_internal_encoding($enc);
     } elseif ($gi->flags & GEOIP_SHARED_MEMORY) {
-      $buf = @shmop_read ($gi->shmid, 
+      $buf = @shmop_read ($gi->shmid,
                             2 * $gi->record_length * $offset,
                             2 * $gi->record_length );
         } else {
-      fseek($gi->filehandle, 2 * $gi->record_length * $offset, SEEK_SET) == 0
-        or die("fseek failed");
+      if(fseek($gi->filehandle, 2 * $gi->record_length * $offset, SEEK_SET) != 0) {
+				throw new Exception('GeoIP - File Seek operation failed. IPv6-to-Country resolution aborted.');
+      }
       $buf = fread($gi->filehandle, 2 * $gi->record_length);
     }
     $x = array(0,0);
@@ -570,7 +573,7 @@ function _geoip_seek_country($gi, $ipnum) {
       // workaround php's broken substr, strpos, etc handling with
       // mbstring.func_overload and mbstring.internal_encoding
       $enc = mb_internal_encoding();
-       mb_internal_encoding('ISO-8859-1'); 
+       mb_internal_encoding('ISO-8859-1');
 
       $buf = substr($gi->memory_buffer,
                             2 * $gi->record_length * $offset,
@@ -578,12 +581,13 @@ function _geoip_seek_country($gi, $ipnum) {
 
       mb_internal_encoding($enc);
     } elseif ($gi->flags & GEOIP_SHARED_MEMORY) {
-      $buf = @shmop_read ($gi->shmid, 
+      $buf = @shmop_read ($gi->shmid,
                             2 * $gi->record_length * $offset,
                             2 * $gi->record_length );
         } else {
-      fseek($gi->filehandle, 2 * $gi->record_length * $offset, SEEK_SET) == 0
-        or die("fseek failed");
+      if(fseek($gi->filehandle, 2 * $gi->record_length * $offset, SEEK_SET) != 0) {
+        throw new Exception('GeoIP - File Seek operation failed. IPv4-to-Country resolution aborted.');
+      }
       $buf = fread($gi->filehandle, 2 * $gi->record_length);
     }
     $x = array(0,0);
@@ -619,7 +623,7 @@ function _common_get_org($gi, $seek_org){
   // workaround php's broken substr, strpos, etc handling with
   // mbstring.func_overload and mbstring.internal_encoding
   $enc = mb_internal_encoding();
-  mb_internal_encoding('ISO-8859-1'); 
+  mb_internal_encoding('ISO-8859-1');
   $org_buf = substr($org_buf, 0, strpos($org_buf, "\0"));
   mb_internal_encoding($enc);
   return $org_buf;
@@ -679,7 +683,7 @@ function _get_region($gi,$ipnum){
     //print $seek_region;
     if ($seek_region < US_OFFSET){
       $country_code = "";
-      $region = "";  
+      $region = "";
         } else if ($seek_region < CANADA_OFFSET) {
       $country_code = "US";
       $region = chr(($seek_region - US_OFFSET)/26 + 65) . chr(($seek_region - US_OFFSET)%26 + 65);

@@ -7,3 +7,5 @@ vendor/
 *.sw?
 t.php
 *.old
+
+/*.komodoproject
