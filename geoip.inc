@@ -562,7 +562,8 @@ function _geoip_seek_country_v6($gi, $ipnum) {
       $offset = $x[0];
     }
   }
-  trigger_error("error traversing database - perhaps it is corrupt?", E_USER_ERROR);
+	throw new Exception('Error traversing database. File may be corrupt, please try replacing it ' .
+											'with a new one. You can download it from MaxMind website');
   return false;
 }
 
@@ -608,7 +609,8 @@ function _geoip_seek_country($gi, $ipnum) {
       $offset = $x[0];
     }
   }
-  trigger_error("error traversing database - perhaps it is corrupt?", E_USER_ERROR);
+	throw new Exception('Error traversing database. File may be corrupt, please try replacing it ' .
+											'with a new one. You can download it from MaxMind website');
   return false;
 }
 
