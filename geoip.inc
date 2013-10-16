@@ -1,5 +1,12 @@
 <?php
 
+// If class "GeoIP" already exists, we can assume that this file has
+// already been included. This is a workaround for one of the major issues of
+// original GeoIP library, which miserably crashes if it's included twice
+if(class_exists('GeoIP')) {
+	return;
+}
+
 /* -*- Mode: C; indent-tabs-mode: t; c-basic-offset: 2; tab-width: 2 -*- */
 /* geoip.inc
  *
