@@ -28,13 +28,6 @@
  *                  this library can be used in the same script as geoip.inc.
  */
 
-// If class "geoiprecord" already exists, we can assume that this file has
-// already been included. This is a workaround for one of the major issues of
-// original GeoIP library, which miserably crashes if it's included twice
-if(class_exists('geoiprecord')) {
-	return;
-}
-
 if(!defined('FULL_RECORD_LENGTH')) {
 	define("FULL_RECORD_LENGTH",50);
 }
@@ -42,21 +35,24 @@ if(!defined('FULL_RECORD_LENGTH')) {
 require_once 'geoip.inc';
 require_once 'geoipregionvars.php';
 
-class geoiprecord {
-  var $country_code;
-  var $country_code3;
-  var $country_name;
-  var $region;
-  var $city;
-  var $postal_code;
-  var $latitude;
-  var $longitude;
-  var $area_code;
-  var $dma_code;   # metro and dma code are the same. use metro_code
-  var $metro_code;
-  var $continent_code;
+// This is a workaround for one of the major issues of
+// original GeoIP library, which miserably crashes if it's included twice
+if(!class_exists('geoiprecord')) {
+	class geoiprecord {
+		var $country_code;
+		var $country_code3;
+		var $country_name;
+		var $region;
+		var $city;
+		var $postal_code;
+		var $latitude;
+		var $longitude;
+		var $area_code;
+		var $dma_code;   # metro and dma code are the same. use metro_code
+		var $metro_code;
+		var $continent_code;
+	}
 }
-
 if(!class_exists('geoipdnsrecord')) {
 	class geoipdnsrecord {
 		var $country_code;
